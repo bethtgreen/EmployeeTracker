@@ -1,16 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 const logo = require('asciiart-logo');
-
-// function to show the asciiart-logo
-function init(){
-    const logoText = logo ({ name: "Beth's Employee Manager"}).render();
-    console.log(logoText);
-      // run the start function after the connection is made to prompt the user
-      start();
-}
-init()
-
 // create the connection information for the sql database
 var connection = mysql.createConnection({
   host: "localhost",
@@ -29,50 +19,79 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
     if (err) throw err;
   });
-  //function to ask user if they would like to add anything new
-  function start() {
-    inquirer
-      .prompt([
-       { name: "databasePrompt",
-        type: "list",
-        message: "Would you like to ADD to, VIEW or UPDATE the database",
-        choices: ["ADD", "VIEW", "UPDATE", "EXIT"]
-       }
-    ])
-    .then(function(answer){
-        switch (answer.databasePrompt) {
-            case "ADD":
-                // return addDatabase()
-            case "VIEW":
-                // return
-            case  "UPDATE":
-                // return
-            case "EXIT":
-                return connection.end();
-
+// function to show the asciiart-logo
+function init(){
+  const logoText = logo ({ name: "Beth's Employee Manager"}).render();
+  console.log(logoText);
+  // run the start function after the connection is made to prompt the user
+  start();
+  
+}
+function start() {
+  inquirer.prompt([
+    {
+      type:"list",
+      name: "choice",
+      message: "What would you like to do?",
+      choices: [
+        {
+          name: "View all Employees",
+          value: "VIEW_EMPLOYEES"
         }
-    })
-  }
-  function addDatabase(){
-      inquirer
-        .prompt([
-            {
-                name: "addPrompt",
-                type: "list",
-                message: "Would you like to add to the DEPARTMENTS, ROLES, or EMPLOYEES?",
-                choices: ["DEPARTMENTS", "ROLES", "EMPLOYEES"]
-            }
-        ])
-        .then(function(answer){
+      ]
+    }
+  ]).then(function(){
+    
+  })
+}
 
-        })
-  }
-  function readProducts() {
-    console.log("Selecting all items...\n");
-    connection.query("SELECT * FROM departments", function (err, res) {
-      if (err) throw err;
-      // Log all results of the SELECT statement
-      console.table(res);
-      // connection.end();
-    });
-  }
+init();
+
+
+  // //function to ask user if they would like to add anything new
+  // function start() {
+  //   inquirer
+  //     .prompt([
+  //      { name: "databasePrompt",
+  //       type: "list",
+  //       message: "Would you like to ADD to, VIEW or UPDATE the database",
+  //       choices: ["ADD", "VIEW", "UPDATE", "EXIT"]
+  //      }
+  //   ])
+  //   .then(function(answer){
+  //       switch (answer.databasePrompt) {
+  //           case "ADD":
+  //               // return addDatabase()
+  //           case "VIEW":
+  //               // return
+  //           case  "UPDATE":
+  //               // return
+  //           case "EXIT":
+  //               return connection.end();
+
+  //       }
+  //   })
+  // }
+  // function addDatabase(){
+  //     inquirer
+  //       .prompt([
+  //           {
+  //               name: "addPrompt",
+  //               type: "list",
+  //               message: "Would you like to add to the DEPARTMENTS, ROLES, or EMPLOYEES?",
+  //               choices: ["DEPARTMENTS", "ROLES", "EMPLOYEES"]
+  //           }
+  //       ])
+  //       .then(function(answer){
+
+  //       })
+  // }
+  // function readProducts() {
+  //   console.log("Selecting all items...\n");
+  //   connection.query("SELECT * FROM departments", function (err, res) {
+  //     if (err) throw err;
+  //     // Log all results of the SELECT statement
+  //     console.table(res);
+  //     // connection.end();
+  //   });
+  // }
