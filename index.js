@@ -1,6 +1,9 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 const logo = require('asciiart-logo');
+const { async } = require("rxjs");
+
+
 // create the connection information for the sql database
 var connection = mysql.createConnection({
   host: "localhost",
@@ -24,9 +27,9 @@ function init(){
   const logoText = logo ({ name: "Beth's Employee Manager"}).render();
   console.log(logoText);
   // run the start function after the connection is made to prompt the user
-  start();
-  
+  start(); 
 }
+// begin the prompt
 function start() {
   inquirer.prompt([
     {
@@ -37,56 +40,99 @@ function start() {
         {
           name: "View all Employees",
           value: "VIEW_EMPLOYEES"
-        }
+        },
+        {
+          name: "View all Roles",
+          value: "VIEW_ROLES"
+        },
+        {
+          name: "View all Departments",
+          value: "VIEW_DEPARTMENTS"
+        },
+        {
+          name: "Add Departments",
+          value: "ADD_DEPARTMENTS"
+        },
+        {
+          name: "Add Role",
+          value :"ADD_ROLE"
+        },
+        {
+          name: "Add Employee",
+          value: "ADD_EMPLOYEE"
+        },
+        {
+          name: "Update Employee Role",
+          value: "UPDATE_ROLE"
+        },
+        {
+          name: "Exit",
+          value: "DONE"
+        },
       ]
     }
-  ]).then(function(){
-    
-  })
+  ]).then((response) => {
+    handleChoices(response);
+  });
 }
+function handleChoices(choices){
+  switch(choices.choice){
+    case "VIEW_EMPLOYEES":
+    return viewEmployees();
+    
+    case "VIEW_ROLES":
+    return viewRoles();
+
+    case "VIEW_DEPARTMENTS":
+    return viewDepartments();
+  }
+
+}
+ 
+function viewEmployees(){
+  connection.query(
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;", function (error, results) {if (error) throw error;
+      console.table(results); 
+      start();
+    });
+    
+}
+
+function viewRoles(){
+
+  connection.query(
+    "SELECT * FROM role", function (error, results) {if (error) throw error;
+      console.table(results);
+      start();
+    });
+
+}
+
+function viewDepartments(){
+
+  connection.query(
+    "SELECT * FROM department", function (error, results) {if (error) throw error;
+      console.table(results);
+      start();
+    });
+
+}
+
+
 
 init();
 
 
-  // //function to ask user if they would like to add anything new
-  // function start() {
-  //   inquirer
-  //     .prompt([
-  //      { name: "databasePrompt",
-  //       type: "list",
-  //       message: "Would you like to ADD to, VIEW or UPDATE the database",
-  //       choices: ["ADD", "VIEW", "UPDATE", "EXIT"]
-  //      }
-  //   ])
-  //   .then(function(answer){
-  //       switch (answer.databasePrompt) {
-  //           case "ADD":
-  //               // return addDatabase()
-  //           case "VIEW":
-  //               // return
-  //           case  "UPDATE":
-  //               // return
-  //           case "EXIT":
-  //               return connection.end();
+ 
 
-  //       }
-  //   })
-  // }
-  // function addDatabase(){
-  //     inquirer
-  //       .prompt([
-  //           {
-  //               name: "addPrompt",
-  //               type: "list",
-  //               message: "Would you like to add to the DEPARTMENTS, ROLES, or EMPLOYEES?",
-  //               choices: ["DEPARTMENTS", "ROLES", "EMPLOYEES"]
-  //           }
-  //       ])
-  //       .then(function(answer){
 
-  //       })
-  // }
-  // function readProducts() {
+
+
+
+
+
+
+// function readProducts() {
   //   console.log("Selecting all items...\n");
   //   connection.query("SELECT * FROM departments", function (err, res) {
   //     if (err) throw err;
