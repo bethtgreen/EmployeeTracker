@@ -55,7 +55,7 @@ function start() {
         },
         {
           name: "Add Role",
-          value :"ADD_ROLE"
+          value :"ADD_ROLES"
         },
         {
           name: "Add Employee",
@@ -85,6 +85,21 @@ function handleChoices(choices){
 
     case "VIEW_DEPARTMENTS":
     return viewDepartments();
+
+    case "ADD_DEPARTMENTS":
+    return addDepartments();
+
+    case "ADD_ROLE":
+      return addRoles();
+
+    case "ADD_EMPLOYEE":
+      return addEmployee();
+
+    case "UPDATE_ROLE":
+      return updateRole();
+
+      case "EXIT":
+        return connection.end();
   }
 
 }
@@ -99,7 +114,6 @@ function viewEmployees(){
 }
 
 function viewRoles(){
-
   connection.query(
     "SELECT * FROM role", function (error, results) {if (error) throw error;
       console.table(results);
@@ -109,7 +123,6 @@ function viewRoles(){
 }
 
 function viewDepartments(){
-
   connection.query(
     "SELECT * FROM department", function (error, results) {if (error) throw error;
       console.table(results);
