@@ -10,9 +10,18 @@ To run the app, open the file and type "node index.js" in the terminal, ensuring
 
 * Use [console.table](https://www.npmjs.com/package/console.table) to print MySQL rows to the console. There is a built-in version of `console.table`, but the NPM package formats the data a little better for our purposes.
 
+# Technologies Used
+**MySQL:** Relational database management system based on SQL – Structured Query Language, used in this applicationt to warehouse and query employee and company data.
+**Express.js**- Used for application set up of middle ware for end point connection between the front end and backend.
+**-Node.js** - Used for package managment and to execute JavaScript code to build command line tool for server-side scripting.
+**Javascript** - Used to base functionality of functions and prompts within the application.
+**Git** - Version control system to track changes to source code
+**GitHub** - Hosts repository that can be deployed to GitHub Pages
+
 # Video Walkthrough
 
 https://drive.google.com/file/d/1b2_uP-5nKpC-ts7ZDWnRtaeF8ebotRgl/view
 
 # Github Link
 https://github.com/bethtgreen/EmployeeTracker
+
