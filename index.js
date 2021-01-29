@@ -232,9 +232,13 @@ function addEmployee() {
     // query the database for all items being auctioned
     connection.query("SELECT * FROM employee", function(err, results) {
       if (err) throw err;
-      // 
-      inquirer
-        .prompt([
+      var allRoles = connection.query("SELECT * FROM role", function (err, nTitle) {
+        if (err) throw err;
+        console.log(nTitle);
+        return nTitle;
+      });
+       console.log(results);
+      inquirer.prompt([
           {
             name: "employeeName",
             type: "list",
@@ -254,8 +258,8 @@ function addEmployee() {
             message: "What is the title of the employee that you'd like to update the role of?",
             choices: function() {
               var choiceArray = [];
-              for (var i = 0; i < results.length; i++) {
-                choiceArray.push(results[i].title);
+              for (var i = 0; i < allRoles.length; i++) {
+                choiceArray.push(allRoles[i].title);
               } 
               return choiceArray; 
             }
