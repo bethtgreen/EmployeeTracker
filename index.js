@@ -228,14 +228,74 @@ function addEmployee() {
     });
   }
 
-        // function updateRole(){
-        //   connection.query(
-        //     "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;", function (error, results) {if (error) throw error;
-        //       console.table(results); 
-        //       start();
-        //     });
+  function updateRole() {
+    // query the database for all items being auctioned
+    connection.query("SELECT * FROM employee", function(err, results) {
+      if (err) throw err;
+      // 
+      inquirer
+        .prompt([
+          {
+            name: "employeeName",
+            type: "list",
+            message: "What is the name of the employee that you'd like to update the role of?",
+            choices: function() {
+              var choiceArray = [];
+              for (var i = 0; i < results.length; i++) {
+                choiceArray.push(results[i].first_name +  " " + results[i].last_name);
+              }
+              return choiceArray;
+            },
+          },
+          {
             
-        //   }
+            name: "newTitle",
+            type: "list",
+            message: "What is the title of the employee that you'd like to update the role of?",
+            choices: function() {
+              var choiceArray = [];
+              for (var i = 0; i < results.length; i++) {
+                choiceArray.push(results[i].title);
+              } 
+              return choiceArray; 
+            }
+            
+          },
+          {
+            name: "roleName",
+            type: "list",
+            message: "What role does the employee have?",
+            choices: function() {
+              var choiceArray = [];
+              for (var i = 0; i < results.length; i++) {
+                choiceArray.push(results[i].title);
+              }
+              return choiceArray;
+            },
+          },
+          {
+            name: "managerId",
+            type: "input",
+            message: "What the employees manager id?",
+          }
+        ])
+        .then(function(answer) {
+          // get the information of the chosen item
+          var chosenItem;
+          for (var i = 0; i < results.length; i++) {
+            if (results[i].title === answer.roleName) {
+              chosenItem = results[i].id;
+              console.log(chosenItem);
+            }
+          }
+           var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ( ?, ?, ?, ?)";
+          connection.query(query, [answer.firstName, answer.lastName, chosenItem, answer.managerId], function(err, res) {
+              console.log(`You have added this employee: ${(answer.firstName)} ${(answer.lastName)}.`)
+             
+          })
+        });
+      });
+    }
       
 init();
 
