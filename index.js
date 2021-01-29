@@ -3,6 +3,7 @@ var inquirer = require("inquirer");
 const logo = require('asciiart-logo');
 const { async } = require("rxjs");
 
+var allRoles;
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -232,14 +233,14 @@ function addEmployee() {
     // query the database for all items being auctioned
     connection.query("SELECT * FROM employee", function(err, results) {
       if (err) throw err;
-      var allRoles = connection.query("SELECT * FROM role", function (err, nTitle) {
+      connection.query("SELECT * FROM role", function (err, nTitle) {
         if (err) throw err;
-        console.log(nTitle);
-        return nTitle;
-      });
-       console.log(results);
+        allRoles = nTitle;
+      }); 
+       console.log(allRoles + "all roles");
       inquirer.prompt([
           {
+            // done
             name: "employeeName",
             type: "list",
             message: "What is the name of the employee that you'd like to update the role of?",
@@ -252,10 +253,10 @@ function addEmployee() {
             },
           },
           {
-            
+            //done
             name: "newTitle",
             type: "list",
-            message: "What is the title of the employee that you'd like to update the role of?",
+            message: "What is the new role of the employee?",
             choices: function() {
               var choiceArray = [];
               for (var i = 0; i < allRoles.length; i++) {
@@ -263,39 +264,27 @@ function addEmployee() {
               } 
               return choiceArray; 
             }
-            
-          },
-          {
-            name: "roleName",
-            type: "list",
-            message: "What role does the employee have?",
-            choices: function() {
-              var choiceArray = [];
-              for (var i = 0; i < results.length; i++) {
-                choiceArray.push(results[i].title);
-              }
-              return choiceArray;
-            },
-          },
-          {
-            name: "managerId",
-            type: "input",
-            message: "What the employees manager id?",
           }
         ])
         .then(function(answer) {
           // get the information of the chosen item
           var chosenItem;
           for (var i = 0; i < results.length; i++) {
-            if (results[i].title === answer.roleName) {
+            if (results[i].first_name + " " + results[i].last_name === answer.employeeName) {
               chosenItem = results[i].id;
-              console.log(chosenItem);
+              // console.log(chosenItem);
             }
           }
-           var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ( ?, ?, ?, ?)";
-          connection.query(query, [answer.firstName, answer.lastName, chosenItem, answer.managerId], function(err, res) {
-              console.log(`You have added this employee: ${(answer.firstName)} ${(answer.lastName)}.`)
-             
+          var chosenItem2;
+          for (var i = 0; i < allRoles.length; i++) {
+            if (allRoles[i].title === answer.newTitle) {
+              chosenItem2 = allRoles[i].id;
+              console.log("Employee's new role ID number is : " + chosenItem2 );
+            }
+          }
+           var query = "UPDATE employee SET role_id = ? WHERE id = ? ";
+          connection.query(query, [chosenItem2], function(err, res) {
+              console.log(` ${(results[chosenItem-1].first_name)} ${(results[chosenItem-1].last_name)} has now been given a new role!`)
           })
         });
       });
