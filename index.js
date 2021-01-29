@@ -7,13 +7,10 @@ const { async } = require("rxjs");
 // create the connection information for the sql database
 var connection = mysql.createConnection({
   host: "localhost",
-
   // Your port; if not 3306
   port: 3306,
-
   // Your username
   user: "root",
-
   // Your password
   password: "rootroot",
   database: "employees"
@@ -54,7 +51,7 @@ function start() {
           value: "ADD_DEPARTMENTS"
         },
         {
-          name: "Add Role",
+          name: "Add Roles",
           value :"ADD_ROLES"
         },
         {
@@ -89,7 +86,7 @@ function handleChoices(choices){
     case "ADD_DEPARTMENTS":
     return addDepartments();
 
-    case "ADD_ROLE":
+    case "ADD_ROLES":
       return addRoles();
 
     case "ADD_EMPLOYEE":
@@ -99,7 +96,8 @@ function handleChoices(choices){
       return updateRole();
 
       case "EXIT":
-        return connection.end();
+       return connection.end();
+        
   }
 
 }
@@ -122,35 +120,122 @@ function viewRoles(){
 
 }
 
-function viewDepartments(){
+function viewDepartments() {
   connection.query(
-    "SELECT * FROM department", function (error, results) {if (error) throw error;
+    "SELECT * FROM department ORDER BY id asc", function (error, results) {if (error) throw error;
       console.table(results);
       start();
     });
 
 }
 
+//functions to add to various tables in database
+function addDepartments() {
+ 
+  inquirer
+      .prompt({
+          name: "department",
+          type: "input",
+          message: "What's the departments name?",
+})
+      .then(function(answer) {
+      var query = "INSERT INTO department (name) VALUES ( ? )";
+      connection.query(query, answer.department, function(error, results) {
+          console.log(`You have added this department: ${(answer.department).toUpperCase()}.`)
+      })
+      viewDepartments();
+      })
+      
+}
+function addRoles() {
+  inquirer
+      .prompt([{
+          name: "roles",
+          type: "input",
+          message: "What role would you like to add to the database?",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "What can this role expected salary be?"
+      },
+      {
+        name: "id",
+        type: "input",
+        message: "What is the ID of this department? (single number)"
+      }
+    ]).then(function(answer) {
+      var query = "INSERT INTO role (title, salary, department_id) VALUES ( ?, ?, ? )";
+      connection.query(query, [answer.roles, answer.salary, answer.id], function(err, res) {
+          console.log(`You have added this role: ${(answer.roles).toUpperCase()}.`)
+      })
+      viewRoles();
+      })
+      
+}
 
 
+function addEmployee() {
+  // query the database for all items being auctioned
+  connection.query("SELECT * FROM role", function(err, results) {
+    if (err) throw err;
+    // once you have the items, prompt the user for which they'd like to bid on
+    inquirer
+      .prompt([
+        {
+          name: "firstName",
+          type: "input",
+          message: "What is the new employees first name?"
+        },
+        {
+          name: "lastName",
+          type: "input",
+          message: "What is the new employees last name?"
+        },
+        {
+          name: "roleName",
+          type: "list",
+          message: "What role does the employee have?",
+          choices: function() {
+            var choiceArray = [];
+            for (var i = 0; i < results.length; i++) {
+              choiceArray.push(results[i].title);
+            }
+            return choiceArray;
+          },
+        },
+        {
+          name: "managerId",
+          type: "input",
+          message: "What the employees manager id?",
+        }
+      ])
+      .then(function(answer) {
+        // get the information of the chosen item
+        var chosenItem;
+        for (var i = 0; i < results.length; i++) {
+          if (results[i].title === answer.roleName) {
+            chosenItem = results[i].id;
+            console.log(chosenItem);
+          }
+        }
+         var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ( ?, ?, ?, ?)";
+        connection.query(query, [answer.firstName, answer.lastName, chosenItem, answer.managerId], function(err, res) {
+            console.log(`You have added this employee: ${(answer.firstName)} ${(answer.lastName)}.`)
+           
+        })
+      });
+    });
+  }
+
+        // function updateRole(){
+        //   connection.query(
+        //     "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;", function (error, results) {if (error) throw error;
+        //       console.table(results); 
+        //       start();
+        //     });
+            
+        //   }
+      
 init();
 
-
- 
-
-
-
-
-
-
-
-
-// function readProducts() {
-  //   console.log("Selecting all items...\n");
-  //   connection.query("SELECT * FROM departments", function (err, res) {
-  //     if (err) throw err;
-  //     // Log all results of the SELECT statement
-  //     console.table(res);
-  //     // connection.end();
-  //   });
-  // }
