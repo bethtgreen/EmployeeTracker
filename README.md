@@ -12,7 +12,7 @@ To run the app, open the file and type "node index.js" in the terminal, ensuring
 
 # Video Walkthrough
 
--link-
+https://drive.google.com/file/d/1b2_uP-5nKpC-ts7ZDWnRtaeF8ebotRgl/view
 
 # Github Link
 -link-
